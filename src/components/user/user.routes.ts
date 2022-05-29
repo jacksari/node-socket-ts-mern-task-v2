@@ -1,5 +1,4 @@
 import { Router } from 'express';
-// import { check } from 'express-validator';
 import {
   createUser,
   getUsers,
@@ -10,11 +9,17 @@ import {
 } from './user.controller';
 import { validarADMIN } from '../../middlewares/validar-admin';
 import { validarJWT } from '../../middlewares/validar-jwt';
+import validarCampos from '../../middlewares/validar-campos';
+import { check } from 'express-validator';
 
 const router = Router();
 
 router.post(
   '/',
+  [
+    check('name', 'El nombre es obligatorio').not().isEmpty(),
+    validarCampos
+  ],
   createUser
 );
 
@@ -22,7 +27,7 @@ router.get(
   '/',
   [
     validarJWT,
-    validarADMIN
+    // validarADMIN
   ],
   getUsers
 );

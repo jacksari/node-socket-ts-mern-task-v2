@@ -10,80 +10,74 @@ import './config/db';
 import swaggerUI from 'swagger-ui-express';
 import swaggerJsDoc from 'swagger-jsdoc';
 
-
 // Rutas
 import routeUser from './components/user/user.routes';
 import routeAuth from './components/auth/auth.routes';
 import { options } from './config/swaggerOptions';
 
-
-
 //const socketio = require('socket.io');
 //const Sockets  = require('./sockets');
 
 export default class Server {
+  public app: express.Application;
+  public port: number;
 
-    public app: express.Application;
-    public port: number;
+  constructor(port: number) {
+    this.app = express();
+    this.port = port;
 
-    constructor(port: number) {
+    // Http server
+    //this.server = http.createServer( this.app );
 
-        this.app  = express();
-        this.port = port;
+    // Configuraciones de sockets
+    //this.io = socketio( this.server, { /* configuraciones */ } );
+  }
 
-        // Http server
-        //this.server = http.createServer( this.app );
+  middlewares(): void {
+    // Desplegar el directorio público
+    this.app.use(express.static(path.resolve(__dirname, '../public')));
 
-        // Configuraciones de sockets
-        //this.io = socketio( this.server, { /* configuraciones */ } );
-    }
+    // CORS
+    this.app.use(cors());
 
-    middlewares(): void {
-        // Desplegar el directorio público
-        this.app.use( express.static( path.resolve( __dirname, '../public' ) ) );
+    this.app.use(morgan('dev'));
 
-        // CORS
-        this.app.use( cors() );
+    this.app.use(express.json());
+  }
 
-        this.app.use(morgan('dev'));
+  swagger(): void {
+    const specs = swaggerJsDoc(options);
+    this.app.use('/docs', swaggerUI.serve, swaggerUI.setup(specs));
+  }
 
-        this.app.use(express.json())
-    }
+  routes(): void {
+    this.app.use('/api/v1/user', routeUser);
+    this.app.use('/api/v1/auth', routeAuth);
+  }
 
-    swagger(): void {
-        const specs = swaggerJsDoc(options);
-        this.app.use('/docs', swaggerUI.serve, swaggerUI.setup(specs));
-    }
+  // Esta configuración se puede tener aquí o como propieda de clase
+  configurarSockets(): void {
+    //new Sockets( this.io );
+  }
 
-    routes(): void {
-        this.app.use("/api/v1/user", routeUser);
-        this.app.use("/api/v1/auth", routeAuth);
-    }
+  static init(port: number): Server {
+    return new Server(port);
+  }
 
-    // Esta configuración se puede tener aquí o como propieda de clase
-    configurarSockets(): void {
-        //new Sockets( this.io );
-    }
+  start(): void {
+    // Inicializar Middlewares
+    this.middlewares();
 
-    static init(port: number): Server{
-        return new Server(port);
-    }
+    // Inicializar sockets
+    //this.configurarSockets();
 
-    start(): void {
+    this.routes();
 
-        // Inicializar Middlewares
-        this.middlewares();
+    this.swagger();
 
-        // Inicializar sockets
-        //this.configurarSockets();
-
-        this.routes();
-
-        this.swagger();
-
-        // Inicializar Server
-        this.app.listen( this.port, () => {
-            console.log('Server corriendo en puerto:', this.port );
-        });
-    }
+    // Inicializar Server
+    this.app.listen(this.port, () => {
+      console.log('Server corriendo en puerto:', this.port);
+    });
+  }
 }

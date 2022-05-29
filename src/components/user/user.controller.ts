@@ -12,6 +12,8 @@ const createUser = async (req: Request, res: Response): Promise<void> => {
       user
     })
   } catch (error) {
+    console.log('RE: ', error);
+    
     ErrorHandler(req, res, 500, 'Error al crear usuario');
   }
 }

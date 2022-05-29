@@ -24,7 +24,7 @@ const getUsers = async (desde: number, limit: number, search: string): Promise<U
       { email: regex },
       { name: regex },
     ]
-  }).skip(desde).limit(limit).sort({ created_at: -1 });
+  }).select('name lastname email img role slug').skip(desde).limit(limit).sort({ created_at: -1 });
 };
 
 const getUserById = async (id: string): Promise<User> => await UserModel.findById(id);
