@@ -4,8 +4,14 @@ import userService from './user.service';
 import { User } from '../../data/user.data';
 
 
-const createUser = async (req: Request, res: Response): Promise<void> => {
+const createUser = async (req: Request, res: Response) => {
   try {
+    const userExist = await userService.getUserByEmail(req.body.email);
+    if(userExist) {
+      return ErrorHandler(req, res, 400, 'El usuario ya existe.');
+      
+    }
+
     const user = await userService.createUser(req.body);
     res.status(200).json({
       ok: true,
@@ -14,7 +20,7 @@ const createUser = async (req: Request, res: Response): Promise<void> => {
   } catch (error) {
     console.log('RE: ', error);
     
-    ErrorHandler(req, res, 500, 'Error al crear usuario');
+    return ErrorHandler(req, res, 500, 'Error al crear usuario');
   }
 }
 
@@ -45,7 +51,7 @@ const getUserById = async (req: Request, res: Response): Promise<void> => {
   try {
     const user = await userService.getUserById(req.params.id);
     if(!user){
-      return ErrorHandler(req, res, 404, 'No existe un usuario con ese id');
+      ErrorHandler(req, res, 404, 'No existe un usuario con ese id');
     }
     res.status(200).json({
       ok: true,
@@ -60,7 +66,7 @@ const getUserBySlug = async(req: Request, res: Response): Promise<void> => {
   try {
     const user = await userService.getUserBySlug(req.params.slug);
     if(!user){
-      return ErrorHandler(req, res, 404, 'No existe un usuario con ese slug');
+      ErrorHandler(req, res, 404, 'No existe un usuario con ese slug');
     }
     res.status(200).json({
       ok: true,
@@ -75,7 +81,7 @@ const updateUserById = async (req: Request, res: Response): Promise<void> => {
   try {
     const user = await userService.getUserById(req.params.id);
     if(!user){
-      return ErrorHandler(req, res, 404, 'No existe un usuario con ese id');
+      ErrorHandler(req, res, 404, 'No existe un usuario con ese id');
     }
 
       const { password, google, email, ...content } = req.body;
@@ -84,7 +90,7 @@ const updateUserById = async (req: Request, res: Response): Promise<void> => {
       if( user.email !== email ){
           const existeEmail = await userService.getUserByEmail(email);
           if( existeEmail ) {
-              return  ErrorHandler(req, res, 400, 'Ya existe un usuario con ese correo')
+               ErrorHandler(req, res, 400, 'Ya existe un usuario con ese correo')
           }
       }
       campos.updated_at = new Date();
@@ -100,7 +106,7 @@ const updateUserById = async (req: Request, res: Response): Promise<void> => {
 
   } catch (error) {
       console.log(error);
-      return ErrorHandler(req, res, 500, 'Error al actualizar categoría')
+      ErrorHandler(req, res, 500, 'Error al actualizar categoría')
   }
 
 }
@@ -109,7 +115,7 @@ const deleteUserById = async(req: Request, res: Response): Promise<void> => {
   try {
     const user = await userService.getUserById(req.params.id);
     if(!user){
-      return ErrorHandler(req, res, 404, 'No existe un usuario con ese slug');
+      ErrorHandler(req, res, 404, 'No existe un usuario con ese slug');
     }
     await userService.deleteUser(user._id as string);
     res.json({

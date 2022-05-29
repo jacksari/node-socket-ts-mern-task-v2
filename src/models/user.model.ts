@@ -35,6 +35,9 @@ const UserSchema = new Schema<User>({
   slug: {
     type: String
   },
+  token: {
+    type: String
+  },
   created_at: {
     type: Date,
     default: new Date(),

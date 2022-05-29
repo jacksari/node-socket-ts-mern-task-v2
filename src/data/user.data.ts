@@ -14,6 +14,7 @@ export interface User {
   role: Role,
   slug: string,
   google?: boolean,
+  token?: string,
   created_at: Date,
   updated_at: Date,
 }

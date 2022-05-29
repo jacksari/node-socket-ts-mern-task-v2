@@ -12,14 +12,14 @@ const validarJWT = (req: Request, res: Response, next: NextFunction): void => {
         return ErrorHandler(req, res, 401, 'No hay token en la petición');
     }
     try {
-        const tk = jwt.verify(token, environment.JWT_SECRET);
+        const tk = jwt.verify(token as string, environment.JWT_SECRET);
         
         const tk1 = tk as JwtPayload;
         res.locals.uid = tk1.payload.uid;
         next();
     } catch (error) {
         //console.log(error);
-        ErrorHandler(req, res, 401, 'Token incorrecto');
+        return ErrorHandler(req, res, 401, 'Token incorrecto');
     }
 
     
@@ -39,7 +39,7 @@ const validarJwtActiveUser = (req: Request, res: Response, next: NextFunction): 
         next();
     } catch (error) {
         //console.log(error);
-        ErrorHandler(req, res, 401, 'Token incorrecto');
+        return ErrorHandler(req, res, 401, 'Token incorrecto');
     }
 
     

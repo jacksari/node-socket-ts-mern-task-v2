@@ -13,7 +13,7 @@ const validarADMIN = async (req: Request, res: Response, next: NextFunction): Pr
         return ErrorHandler(req, res, 404, 'No hay token en la petición');
     }
     try {
-        const tk = jwt.verify(token, environment.JWT_SECRET);
+        const tk = jwt.verify(token as string, environment.JWT_SECRET);
         const tk1 = tk as JwtPayload;
         const user = await userService.getUserByEmail(tk1.payload.uid)
         if(!user){
@@ -27,10 +27,7 @@ const validarADMIN = async (req: Request, res: Response, next: NextFunction): Pr
 
     } catch (error) {
         //console.log(error);
-        res.status(401).json({
-            ok: false,
-            msg: 'Token incorrecto'
-        })
+        ErrorHandler(req,res ,401, 'Token incorrecto');
     }
 
 

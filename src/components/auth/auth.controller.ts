@@ -30,7 +30,7 @@ const authLogin = async (req: Request, res: Response): Promise<void> => {
   } catch (error) {
     console.log(error);
 
-    ErrorHandler(req, res, 500, 'Error al logear usuario');
+    return ErrorHandler(req, res, 500, 'Error al logear usuario');
   }
 }
 
@@ -43,7 +43,7 @@ const getUser = async (req: Request, res: Response): Promise<void> => {
           user
       });
   } catch (error) {
-      ErrorHandler(req, res, 500, 'Error al devolver datos del usuario')
+      return ErrorHandler(req, res, 500, 'Error al devolver datos del usuario')
   }
 }
 
