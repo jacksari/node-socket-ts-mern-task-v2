@@ -1,9 +1,11 @@
+import { Document } from "mongoose";
+
 export enum Role {
   user = 'user_role',
   admin = 'admin_role'
 }
 
-export interface User {
+export interface User extends Document {
   _id?: string,
   name: string,
   lastname: string,

@@ -4,6 +4,7 @@ import { uid } from 'uid';
 
 import { genSaltSync, hashSync } from 'bcrypt';
 import slug from 'slug';
+import { generateId } from '../../helpers/generateId';
 const saltRounds = 10;
 
 const createUser = async (user: User): Promise<User> => {
@@ -14,6 +15,7 @@ const createUser = async (user: User): Promise<User> => {
     password: hashSync(user.password as string, genSaltSync(saltRounds)),
     img: `https://ui-avatars.com/api/?name=${user.name}+${user.lastname}`,
     slug: `${slug(user.name)}-${slug(user.lastname)}-${uid(6)}`,
+    token: generateId()
   });
 }
 
